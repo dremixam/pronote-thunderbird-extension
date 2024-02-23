@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const boutonSauvegarderConfiguration = document.getElementById('bouton-sauvegarder-configuration');
+    const boutonsSauvegarderConfiguration = document.getElementsByClassName('bouton-sauvegarder-configuration');
     const boutonImporterCSV = document.getElementById('bouton-importer-csv');
 
     // Charger la configuration actuelle lors du chargement de la page
     chargerConfiguration();
 
-    boutonSauvegarderConfiguration.addEventListener('click', function () {
-        sauvegarderConfiguration();
-    });
+    for (var i = 0; i < boutonsSauvegarderConfiguration.length; i++) {
+        boutonsSauvegarderConfiguration[i].addEventListener('click', function () {
+            sauvegarderConfiguration();
+        });
+    }
 
     boutonImporterCSV.addEventListener('click', function () {
         importerCSV();
@@ -100,6 +102,7 @@ function importerCSV() {
                         console.log("Base de données vidée avec succès.");
                         // Insérer de nouvelles données
                         insererDonnees(lignes, objectStore, configuration);
+
                     };
                     clearRequest.onerror = function (event) {
                         console.error("Erreur lors de la suppression des données:", event.target.error);
@@ -117,7 +120,9 @@ function importerCSV() {
 }
 
 function insererDonnees(lignes, objectStore, configuration) {
-    lignes.forEach((ligne, index) => {
+    let error = 0;
+    let processed = 0;
+    lignes.forEach((ligne, index, array) => {
         console.log(ligne);
         const donnees = {
             nomEleve: ligne[configuration.nomEleve] ?? '',
@@ -136,9 +141,22 @@ function insererDonnees(lignes, objectStore, configuration) {
         const request = objectStore.add(donnees);
         request.onsuccess = function () {
             console.log('Donnée insérée avec succès.');
+
+            processed++;
+            if (processed === array.length) {
+                if (error == 0) {
+                    window.alert(processed + " élèves ajoutés avec succès");
+                }
+                else {
+                    window.alert(processed + " élèves ajoutés. " + error + " comportentn des erreurs.");
+                }
+            }
+
         };
         request.onerror = function (event) {
             console.error('Erreur lors de l\'insertion des données:', event.target.error);
+            processed++;
+            error++;
         };
     });
 }

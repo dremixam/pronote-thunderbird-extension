@@ -6,6 +6,25 @@
 
 const regexAcademieDomain = /^ac-[a-zA-Z0-9-]+\.fr$/;
 
+// Création de la configuration par défaut si elle n'existe pas déja
+if (localStorage.getItem('configuration') == null) {
+  const configuration = {
+    domain: "ac-rennes.fr",
+    nomEleve: "NOM",
+    prenomEleve: "PRENOM",
+    classeEleve: "CLASSES",
+    mailResponsable1: "R1_EMAIL",
+    nomResponsable1: "R1_NOM",
+    prenomResponsable1: "R1_PRENOM",
+    mailResponsable2: "R2_EMAIL",
+    nomResponsable2: "R2_NOM",
+    prenomResponsable2: "R2_PRENOM",
+  };
+  
+  // Sauvegarder la configuration dans localStorage
+  localStorage.setItem('configuration', JSON.stringify(configuration));
+}
+
 browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 
   let parsed = parseSender(message.author);
@@ -25,7 +44,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
         windowId: tab.windowId,
         tabId: tab.id,
         priority: messenger.notificationbar.PRIORITY_CRITICAL_HIGH,
-        label: "L'adresse " + email + " est celle du parent de : " + eleveNames + "",
+        label: "L'adresse " + email + " est celle de l'un des responsables de : " + eleveNames + "",
         placement: "message",
         style: {
           "color": "rgb(255,255,255)",

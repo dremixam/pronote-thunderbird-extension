@@ -44,10 +44,13 @@
     <p id="nombre-eleves">Nombre d'élèves dans la base actuellement : <span id="valeur-nombre-eleves"></span></p>
 
     <h2>Configuration générale</h2>
-    <label for="champ-domain">Champ Nom de l'élève:</label>
+    <label for="champ-domain">Domaine de l'académie:</label>
     <input type="text" id="champ-domain" value="ac-rennes.fr">
 
+    <button class="bouton-sauvegarder-configuration">Sauvegarder configuration</button>
+
     <h2>Configuration des champs CSV</h2>
+    <p>Cette partie ne doit être modifiée que si le format des exports PRONOTE est modifié dans le futur</p>
     <label for="champ-nom-eleve">Champ Nom de l'élève:</label>
     <input type="text" id="champ-nom-eleve" value="NOM">
     <label for="champ-prenom-eleve">Champ Prénom de l'élève:</label>
@@ -67,8 +70,7 @@
     <label for="champ-prenom-responsable2">Champ Prénom Responsable 2:</label>
     <input type="text" id="champ-prenom-responsable2" value="R2_PRENOM">
     
-    <button id="bouton-sauvegarder-configuration">Sauvegarder configuration</button>
-
+    <button class="bouton-sauvegarder-configuration">Sauvegarder configuration</button>
 
     <script src="options.js"></script>
 </body>
