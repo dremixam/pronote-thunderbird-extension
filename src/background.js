@@ -20,7 +20,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
     const eleves = await checkEleve(email);
 
     if (eleves.length > 0) {
-      let eleveNames = eleves.map(eleve => eleve.nomEleve + " " + eleve.prenomEleve).join(", ");
+      let eleveNames = eleves.map(eleve => eleve.nomEleve + " " + eleve.prenomEleve + " (" + eleve.classeEleve + ")").join(", ");
       await messenger.notificationbar.create({
         windowId: tab.windowId,
         tabId: tab.id,

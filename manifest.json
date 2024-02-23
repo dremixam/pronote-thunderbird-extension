@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "1.0",
+  "version": "1.0.1",
   "author": "Maxime Mélinon",
   "name": "Outil AED",
   "description": "Cette extension permet d'assister le travail d'AED et de faire le lien avec Pronote",
