@@ -36,7 +36,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 
   try {
     // Rechercher les élèves correspondant à l'email
-    const eleves = await checkEleve(email);
+    const eleves = await getElevesByEmail(email);
 
     if (eleves.length > 0) {
       let eleveNames = eleves.map(eleve => eleve.nomEleve + " " + eleve.prenomEleve + " (" + eleve.classeEleve + ")").join(", ");
@@ -56,13 +56,9 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
         await messenger.notificationbar.create({
           windowId: tab.windowId,
           tabId: tab.id,
-          priority: messenger.notificationbar.PRIORITY_CRITICAL_HIGH,
+          priority: messenger.notificationbar.PRIORITY_INFO_HIGH,
           label: email + " est une adresse académique de " + domain,
-          placement: "message",
-          style: {
-            "color": "rgb(255,255,255)",
-            "background-color": "rgb(0,196,0)"
-          }
+          placement: "message"
         });
       }
       else if (regexAcademieDomain.test(domain)) {
@@ -78,7 +74,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
         await messenger.notificationbar.create({
           windowId: tab.windowId,
           tabId: tab.id,
-          priority: messenger.notificationbar.PRIORITY_WARNING_HIGH,
+          priority: messenger.notificationbar.PRIORITY_INFO_HIGH,
           label: email + " est une adresse e-mail rattachée au ministère de l'éducation nationale",
           placement: "message"
         });
@@ -98,58 +94,49 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 
 });
 
-function checkEleve(email) {
+// Function to check if the email is mail_responsable1 ou mail_responsable2 of an eleve
+const getElevesByEmail = (email) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("eleves", 1);
 
+    if (email == null || email == "") {
+      resolve([]);
+      return;
+    }
+
     request.onupgradeneeded = function (event) {
       const db = event.target.result;
-      // Créer un nouvel objet de stockage pour les données CSV
       const objectStore = db.createObjectStore("eleves", { keyPath: "id", autoIncrement: true });
-      // Créer des index pour chaque champ
-      objectStore.createIndex("nom_eleve", "nomEleve", { unique: false });
-      objectStore.createIndex("prenom_eleve", "prenomEleve", { unique: false });
-      objectStore.createIndex("classe_eleve", "classeEleve", { unique: false });
       objectStore.createIndex("mail_responsable1", "mailResponsable1", { unique: false });
-      objectStore.createIndex("nom_responsable1", "nomResponsable1", { unique: false });
-      objectStore.createIndex("prenom_responsable1", "prenomResponsable1", { unique: false });
       objectStore.createIndex("mail_responsable2", "mailResponsable2", { unique: false });
-      objectStore.createIndex("nom_responsable2", "nomResponsable2", { unique: false });
-      objectStore.createIndex("prenom_responsable2", "prenomResponsable2", { unique: false });
     };
 
     request.onsuccess = function (event) {
       const db = event.target.result;
       const transaction = db.transaction(["eleves"], "readonly");
       const objectStore = transaction.objectStore("eleves");
-      const index = objectStore.index("mail_responsable1");
 
-      // Utiliser l'index pour récupérer les enregistrements correspondants à l'email
-      const request = index.getAll(email.toLowerCase());
+      const index1 = objectStore.index("mail_responsable1");
+      const index2 = objectStore.index("mail_responsable2");
 
-      request.onsuccess = function (event) {
-        const eleves1 = event.target.result;
+      const request1 = index1.getAll(email.toLowerCase());
+      const request2 = index2.getAll(email.toLowerCase());
 
-        // Répéter le processus avec le deuxième index
-        const index2 = objectStore.index("mail_responsable2");
-        const request2 = index2.getAll(email.toLowerCase());
+      let eleves = [];
 
+      request1.onsuccess = function (event) {
+        eleves = event.target.result;
         request2.onsuccess = function (event) {
-          const eleves2 = event.target.result;
-
-          // Fusionner les résultats de deux index
-          const eleves = [...eleves1, ...eleves2];
-
-          // Renvoyer les élèves correspondants à l'email
-          resolve(eleves);
+          eleves = [...eleves, ...event.target.result];
+          const uniqueEleves = [...new Set(eleves)];
+          resolve(uniqueEleves);
         };
-
         request2.onerror = function (event) {
           reject(event.target.error);
         };
       };
 
-      request.onerror = function (event) {
+      request1.onerror = function (event) {
         reject(event.target.error);
       };
     };
@@ -158,8 +145,7 @@ function checkEleve(email) {
       reject(event.target.error);
     };
   });
-}
-
+};
 
 function parseSender(header) {
   // Expression régulière pour extraire le nom et l'email de l'expéditeur

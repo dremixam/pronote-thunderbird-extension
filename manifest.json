@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Maxime Mélinon",
   "name": "Outil AED",
   "description": "Cette extension permet d'assister le travail d'AED et de faire le lien avec Pronote",
   "browser_specific_settings": {
     "gecko": {
-      "id": "messageDisplayScript@sample.extensions.thunderbird.net",
+      "id": "outilAED@maxime.melinon.fr",
       "strict_min_version": "110.0a1"
     }
   },
