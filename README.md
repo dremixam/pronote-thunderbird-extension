@@ -14,4 +14,6 @@ Pour l'utiliser, réaliser depuis pronote un export CSV "Eleves et leurs respons
 
 Bien faire attention que l'ensemble des colonnes nécessaires sont selectionnées dans l'export PRONOTE !
 
+[Documentation PDF pour aider à l'utilisation](https://github.com/user-attachments/files/16053606/Documentation.Extension.AED.pdf)
+
 Enjoie.
